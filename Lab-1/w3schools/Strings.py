@@ -2,82 +2,112 @@
 # --- Python Strings ---
 
 # Quotes Inside Quotes
+'''
 print("It's alright")
 print("He is called 'Johnny'")
 print('He is called "Johnny"')
+'''
 
 # Multiline Strings
+'''
 a = """Lorem ipsum dolor sit amet,
 consectetur adipiscing elit,
 sed do eiusmod tempor incididunt
 ut labore et dolore magna aliqua.""" # or three single quotes
 print(a)
+'''
 #Note: in the result, the line breaks are inserted at the same position as in the code.
 
 
 # --- Slicing Strings ---
-
+'''
 b = "Hello, World!"
 print(b[2:5])
+'''
 
 # Slice From the Start
+'''
 b = "Hello, World!"
 print(b[:5])
+'''
 
 # Slice To the End
+'''
 b = "Hello, World!"
 print(b[2:])
+'''
 
 # Negative Indexing
+'''
 b = "Hello, World!"
 print(b[-5:-2])
+'''
 
 
 # --- Modify Strings ---
 
 # Upper Case
+'''
 a = "Hello, World!"
 print(a.upper())
+'''
 
 # Lower Case
+'''
 a = "Hello, World!"
 print(a.lower())
+'''
+
 
 # Remove Whitespace
+'''
 a = " Hello, World! "
 print(a.strip()) # returns "Hello, World!"
+'''
+
 
 # Replace String
+'''
 a = "Hello, World!"
 print(a.replace("H", "J"))
+'''
 
 # Split String
+'''
 a = "Hello, World!"
 print(a.split(",")) # returns ['Hello', ' World!']
+'''
 
 # String Concatenation
+'''
 a = "Hello"
 b = "World"
 c = a + " " + b
 print(c)
+'''
 
 # F-Strings
-
+'''
 age = 36
 txt = f"My name is John, I am {age}"
 print(txt) 
+'''
 
 # A placeholder can contain variables, operations, functions, and modifiers to format the value.
-
+'''
 price = 59
 txt = f"The price is {price:.2f} dollars"
 print(txt)
+'''
 
+'''
 txt = f"The price is {20 * 59} dollars"
 print(txt)
+'''
 
 # --- Escape Character ---
 
+'''
 txt = "We are the so-called \"Vikings\" from the north."
 
 txt = 'It\'s alright.' #Single Quote
@@ -95,10 +125,11 @@ txt = "Hello \bWorld!" #Backspace
 txt = "\110\145\154\154\157" #Octal value
 
 txt = "\x48\x65\x6c\x6c\x6f" #Hex value
+'''
 
 
 # --- String Methods ---
-
+'''
 name = "Flaw"
 
 name.capitalize()	#Converts the first character to upper case
@@ -190,5 +221,6 @@ name.translate()	#Returns a translated string
 name.upper()	#Converts a string into upper case
 
 name.zfill()	#Fills the string with a specified number of 0 values at the beginning
+'''
 
 #Note: All string methods return new values. They do not change the original string.
