@@ -24,7 +24,10 @@ print(x.strftime("%f"))
 '''
 
 # TASK 4
-yesterday = date.today() - timedelta(1)
-today = date.today()
+now = datetime.now()
 
-print(int(today.strftime("%S")) - int(yesterday.strftime("%S")))
+yesterday = now - timedelta(days=1)
+
+difference_in_seconds = (now - yesterday).total_seconds()
+
+print(f"Difference in seconds: {difference_in_seconds}")
