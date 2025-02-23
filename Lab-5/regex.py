@@ -59,7 +59,32 @@ print(re.sub(pattern, camel, txt))
 '''
 
 # Task 8
-txt = "GbabH" # --> G bab H
-pattern = r"[A-Z]"
+'''
+txt = "HelloMyNameIsFlaw"
+pattern = r"[A-Z][^A-Z]*" # [^A-Z]* - находит все большие буквы после которых идут любые другие символы
 
-print(re.split(pattern, txt))
+result = re.findall(pattern, txt)
+
+print(result)
+'''
+
+# Task 9
+'''
+txt = "HelloMyNameIsFlaw"
+pattern = r"([A-Z])"
+
+result = re.sub(pattern, r' \1', txt).strip() # \1 сохраняет найденную большую букву. ' ' добавляет пробел перед. strip() убирает пробел с начала
+
+print(result)
+'''
+
+# Task 10
+'''
+txt = "camelCase"
+pattern = r"([a-z])([A-Z])"
+
+def snake(match):
+    return match.group(1) + "_" + match.group(2).lower()
+
+print(re.sub(pattern, snake, txt))
+'''
