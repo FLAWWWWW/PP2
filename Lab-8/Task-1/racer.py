@@ -18,12 +18,12 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car Game")
 
 # Загрузка ресурсов
-background = pygame.image.load(os.path.abspath('resources/AnimatedStreet.png'))
-player_img = pygame.image.load(os.path.abspath('resources/Player.png'))
-enemy_img = pygame.image.load(os.path.abspath('resources/Enemy.png'))
-money_img = pygame.image.load(os.path.abspath('resources/Coin.png'))
-background_music = pygame.mixer.music.load(os.path.abspath('resources/background.wav'))
-crash_sound = pygame.mixer.Sound(os.path.abspath('resources/crash.wav'))
+background = pygame.image.load('Lab-8/Task-1/resources/AnimatedStreet.png')
+player_img = pygame.image.load(os.path.abspath('Lab-8/Task-1/resources/Player.png'))
+enemy_img = pygame.image.load(os.path.abspath('Lab-8/Task-1/resources/Enemy.png'))
+money_img = pygame.image.load(os.path.abspath('Lab-8/Task-1/resources/Coin.png'))
+background_music = pygame.mixer.music.load(os.path.abspath('Lab-8/Task-1/resources/background.wav'))
+crash_sound = pygame.mixer.Sound(os.path.abspath('Lab-8/Task-1/resources/crash.wav'))
 
 # Настройки текста
 font = pygame.font.SysFont("Verdana", 30)
