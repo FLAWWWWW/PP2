@@ -37,9 +37,9 @@ class Hand:
 
         print(f"Min {6 * now.minute + 0.1 * now.second} Sec {6 * now.second}")
  
-        offset = Vector2()
-        offset.from_polar((0, self.angle))
-        self.pos = self.pivot + offset
+        #offset = Vector2()
+        #offset.from_polar((0, self.angle))
+        #self.pos = self.pivot + offset
 
         self.image_orig = reference_dict[name]
         self.image, self.rect = rotate_on_pivot(self.image_orig, self.angle, self.pivot)
