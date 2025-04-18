@@ -4,7 +4,7 @@ import csv # Нужно для чтения файлов
 conn = psycopg2.connect(
     dbname="phonebook",
     user="postgres",          
-    password="123456", 
+    password="123", 
     host="localhost"
 )
 
@@ -28,57 +28,42 @@ query_create_table_users = """
 """
 
 query_create_func_search_users = """
-    CREATE OR REPLACE FUNCTION public.search_users(
-	pattern text)
-    RETURNS TABLE(user_id integer, user_name character varying, phone_number character varying) 
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-    ROWS 1000
-
+    CREATE OR REPLACE FUNCTION search_users(pattern text)
+    RETURNS TABLE(user_id integer, user_name text, phone_number text)
+    
     AS $BODY$
     BEGIN
-        RETURN QUERY
-        SELECT u.user_id, u.user_name, u.phone_number
-        FROM Users u
-        WHERE u.user_name ILIKE '%' || pattern || '%'
-        OR u.phone_number ILIKE '%' || pattern || '%';
+        RETURN QUERY SELECT u.user_id, u.user_name, u.phone_number FROM Users u
+            WHERE u.user_name LIKE '%' || pattern || '%'
+            OR u.phone_number LIKE '%' || pattern || '%';
+        RETURN;
     END;
-    $BODY$;
+    $BODY$
 
-    ALTER FUNCTION public.search_users(text)
-        OWNER TO postgres;
+    LANGUAGE 'plpgsql';
 """
 
 query_create_func_get_users_page = """
-    CREATE OR REPLACE FUNCTION public.get_users_page(
-	p_limit integer,
-	p_offset integer)
-    RETURNS TABLE(user_id integer, user_name character varying, phone_number character varying) 
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-    ROWS 1000
+    CREATE OR REPLACE FUNCTION public.get_users_page(p_limit integer, p_offset integer)
+    RETURNS TABLE(user_id integer, user_name text, phone_number text) 
 
     AS $BODY$
     BEGIN
-        RETURN QUERY
-        SELECT u.user_id, u.user_name, u.phone_number
-        FROM Users u
-        ORDER BY u.user_id 
-        LIMIT p_limit OFFSET p_offset;
+        RETURN QUERY SELECT u.user_id, u.user_name, u.phone_number FROM Users u
+            ORDER BY u.user_id 
+            LIMIT p_limit OFFSET p_offset;
+        RETURN;
     END;
-    $BODY$;
+    $BODY$
 
-    ALTER FUNCTION public.get_users_page(integer, integer)
-        OWNER TO postgres;
+    LANGUAGE 'plpgsql';
 """
 
 query_create_proc_delete_user = """
     CREATE OR REPLACE PROCEDURE public.delete_user(
 	IN p_name text DEFAULT NULL::text,
 	IN p_phone text DEFAULT NULL::text)
-    LANGUAGE 'plpgsql'
+    
     AS $BODY$
     BEGIN
         IF p_name IS NOT NULL THEN
@@ -87,40 +72,31 @@ query_create_proc_delete_user = """
             DELETE FROM Users WHERE phone_number = p_phone;
         END IF;
     END;
-    $BODY$;
-    ALTER PROCEDURE public.delete_user(text, text)
-        OWNER TO postgres;
+    $BODY$
+
+    LANGUAGE 'plpgsql';
 """
 
 query_create_proc_insert_many_users = """
-    CREATE OR REPLACE PROCEDURE public.insert_many_users(
-	IN names text[],
-	IN phones text[])
-    LANGUAGE 'plpgsql'
+    CREATE OR REPLACE PROCEDURE public.insert_many_users(IN names text[], IN phones text[])
+    
     AS $BODY$
     DECLARE
         i INT;
     BEGIN
         FOR i IN 1..array_length(names, 1) LOOP
-            -- Проверка корректности номера телефона
-            IF phones[i] ~ '^\d{10}$' THEN
-                INSERT INTO Users(user_name, phone_number)
-                VALUES (names[i], phones[i]);
-            ELSE
-                RAISE NOTICE 'Invalid phone number: %', phones[i];
-            END IF;
+            INSERT INTO Users(user_name, phone_number)
+            VALUES (names[i], phones[i]);
         END LOOP;
     END;
-    $BODY$;
-    ALTER PROCEDURE public.insert_many_users(text[], text[])
-        OWNER TO postgres;
+    $BODY$
+
+    LANGUAGE 'plpgsql';
 """
 
 query_create_proc_insert_or_update_user = """
-    CREATE OR REPLACE PROCEDURE public.insert_or_update_user(
-	IN p_name text,
-	IN p_phone text)
-    LANGUAGE 'plpgsql'
+    CREATE OR REPLACE PROCEDURE public.insert_or_update_user(IN p_name text, IN p_phone text)
+    
     AS $BODY$
     BEGIN
         IF EXISTS (SELECT 1 FROM Users WHERE user_name = p_name) THEN
@@ -129,9 +105,9 @@ query_create_proc_insert_or_update_user = """
             INSERT INTO Users (user_name, phone_number) VALUES (p_name, p_phone);
         END IF;
     END;
-    $BODY$;
-    ALTER PROCEDURE public.insert_or_update_user(text, text)
-        OWNER TO postgres;
+    $BODY$
+
+    LANGUAGE 'plpgsql';
 """
 
 # TASK 2
@@ -189,10 +165,14 @@ def delete_by_phone(phone):
 # *** TASKS FROM LAB 11 ***
 # TASK 1
 def search_users(pattern):
-    cur.execute("SELECT * FROM search_users(%s)", (pattern,))
-    rows = cur.fetchall()
-    for row in rows:
-        print(row)
+    try:
+        cur.execute("SELECT * FROM search_users(%s)", (pattern,))
+        rows = cur.fetchall()
+        for row in rows:
+            print(row)
+    except:
+        conn.rollback()
+    conn.commit()
 
 # TASK 2
 def insert_or_update_user(name, phone):
@@ -209,10 +189,15 @@ def insert_many_users(names, phones):
 
 # TASK 4
 def get_users_page(limit, offset):
-    cur.execute("SELECT * FROM get_users_page(%s, %s)", (limit, offset))
-    rows = cur.fetchall()
-    for row in rows:
-        print(row)
+    try:
+        cur.execute("SELECT * FROM get_users_page(%s, %s)", (limit, offset))
+        rows = cur.fetchall()
+        for row in rows:
+            print(row)
+        
+    except:
+        conn.rollback()
+    conn.commit()
 
 # TASK 5
 def delete_user(name=None, phone=None):
@@ -231,12 +216,14 @@ update_user(1, new_phone="6667866") # кого хотим поменять, на
 delete_by_phone("3335433")
 
 # LAB 11
+
 execute_query(query_create_func_get_users_page)
 execute_query(query_create_func_search_users)
 execute_query(query_create_proc_delete_user)
 execute_query(query_create_proc_insert_many_users)
 execute_query(query_create_proc_insert_or_update_user)
-search_users("al")
+
+search_users("Flaw")
 insert_or_update_user("Tod", "111222")
 insert_many_users(
     ["Lol", "Kek", "InvalidGuy"],
@@ -245,7 +232,6 @@ insert_many_users(
 get_users_page(5, 0)
 delete_user(name="Lol")
 delete_user(phone="654321")
-
 
 cur.close()
 conn.close()

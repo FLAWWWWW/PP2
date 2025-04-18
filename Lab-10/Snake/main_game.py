@@ -11,7 +11,7 @@ font = pygame.font.SysFont("Verdana", 30)
 conn = psycopg2.connect(
     dbname="snakescore",
     user="postgres",
-    password="123456",
+    password="123",
     host="localhost"
 )
 cur = conn.cursor()
